@@ -39,6 +39,8 @@ public class Motor implements Runnable{
             while(!jugadorConTurno.moverPieza(gestorventana, tablero));
             estadoPartida.siguienteTurno();
         }while(!estadoPartida.finPartida());
+        gestorventana.mensajeFinPartida(estadoPartida.quienHaGanado().toString());
+        System.out.println("FIN PARTIDA");
         //gestorventana.mensajeFinPartida(estadoPartida.quienHaGanado().toString());
     }
 

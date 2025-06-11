@@ -12,10 +12,15 @@ public class EstadoPartida {
     private Tablero tablero;
     private Color colorGanador;
 
+    private final int ALTO_TABLERO;
+    private final int ANCHO_TABLERO;
+
     public EstadoPartida(Jugador[] jugadores, Tablero tablero){
         this.jugadores = jugadores;
         tieneTurno = 0;
         this.tablero = tablero;
+        ALTO_TABLERO = tablero.ALTO_TABLERO;
+        ANCHO_TABLERO = tablero.ANCHO_TABLERO;
     }
 
     public Jugador quienTieneTurno(){
@@ -45,17 +50,16 @@ public class EstadoPartida {
         Posicion posicionRey = tablero.buscarPieza(new Rey(color));
         Posicion posicionAmenazante = buscarJaque(posicionRey);
         if(posicionAmenazante != null) {
-            System.out.println("JAQUE.................");
             colorGanador = tablero.getPiezaEnCasilla(posicionAmenazante).getColor();
-            return jaqueJaguar(posicionAmenazante, posicionRey) || perteneceAJugadorConTurno(posicionAmenazante);
+            return perteneceAJugadorConTurno(posicionAmenazante) || jaqueJaguar(posicionAmenazante, posicionRey);
         }
         else
             return false;
     }
 
     private Posicion buscarJaque(Posicion posicionRey){
-        for (int i = 0; i < tablero.ANCHO_TABLERO; i++) {
-            for (int j = 0; j < tablero.ALTO_TABLERO; j++) {
+        for (int i = 0; i < ANCHO_TABLERO; i++) {
+            for (int j = 0; j < ALTO_TABLERO; j++) {
                 Posicion potencialJaque = new Posicion(i, j);
                 if (tablero.movimientoPosible(potencialJaque, posicionRey))
                     return potencialJaque;
@@ -66,32 +70,36 @@ public class EstadoPartida {
 
     //Comprueba Jaque Mate
     private boolean jaqueJaguar(Posicion posicionAmenazante, Posicion posicionRey){
+        boolean jaqueJaguar = false;
         List<Posicion> listaPosiblesBloqueos = tablero.getListaPosicionesIntermedias(posicionAmenazante,posicionRey);
         Color colorDelRey = tablero.getPiezaEnCasilla(posicionRey).getColor();
-        Boolean bloqueoEncontrado = false, comerAlAtacante = false, huidaDelRey = false;
+        Boolean bloqueoEncontrado, comerAlAtacante, huidaDelRey;
         int i=0, j;
-        while(i < tablero.ANCHO_TABLERO){
+        while(i < ANCHO_TABLERO){
             j=0;
-            while(j < tablero.ALTO_TABLERO && !bloqueoEncontrado && !comerAlAtacante && !huidaDelRey){
+            while(j < ALTO_TABLERO && !jaqueJaguar){
                 Pieza posibleDefensora = tablero.getPiezaEnCasilla(i,j);
                 if(posibleDefensora != null && posibleDefensora.esDeColor(colorDelRey)) {
                     comerAlAtacante = tablero.movimientoPosible(new Posicion(i,j),posicionAmenazante);
                     bloqueoEncontrado = puedeDefender(new Posicion(i, j), listaPosiblesBloqueos);
                     huidaDelRey = calcularHuidaRey(posicionRey);
+                    jaqueJaguar |= !bloqueoEncontrado && !comerAlAtacante && !huidaDelRey;
                 }
                 j++;
             }
             i++;
         }
-        return !bloqueoEncontrado && !comerAlAtacante && !huidaDelRey;
+        return jaqueJaguar;
     }
 
     private boolean puedeDefender(Posicion posicionPosibleDefensora , List<Posicion> posiblesBloqueos){
-        boolean puedeDefender = false;
+        Pieza piezaDefensora = tablero.getPiezaEnCasilla(posicionPosibleDefensora);
+        if (piezaDefensora instanceof Rey)
+            return false;
         for(Posicion bloqueo: posiblesBloqueos)
             if(tablero.movimientoPosible(posicionPosibleDefensora,bloqueo))
-                puedeDefender = true;
-        return puedeDefender;
+                return true;
+        return false;
     }
 
     private boolean perteneceAJugadorConTurno(Posicion posicion){
@@ -100,14 +108,24 @@ public class EstadoPartida {
 
     private boolean calcularHuidaRey(Posicion posicionRey){
         int[] posicion = new int[] {posicionRey.getPosX(), posicionRey.getPosY()};
-        boolean puedeMoverse = false;
-        for (int i = -1; i < 2; i++) {
+        Color colorRey = tablero.getPiezaEnCasilla(posicionRey).getColor();
+        for (int i = -1; i < 2; i++)
             for (int j = -1; j < 2; j++) {
-                Posicion posicionDestino = new Posicion(posicion[0] + i, posicion[1] +j);
-                if(tablero.movimientoPosible(posicionRey,posicionDestino))
-                    puedeMoverse = true;
+                Posicion posicionDestino = new Posicion(posicion[0] + i, posicion[1] + j);
+                if(posicionDestino.dentroLimites(ALTO_TABLERO,ANCHO_TABLERO))
+                    if (tablero.movimientoPosible(posicionRey, posicionDestino) && !haySubJaque(posicionDestino, colorRey))
+                        return true;
             }
-        }
-        return puedeMoverse;
+        return false;
+    }
+
+    private boolean haySubJaque(Posicion posicionSubJaque, Color color){
+        for (int i = 0; i < ANCHO_TABLERO; i++)
+            for (int j = 0; j < ALTO_TABLERO; j++) {
+                Posicion posicionPorComprobar = new Posicion(i, j);
+                if (tablero.movimientoPosible(posicionPorComprobar, posicionSubJaque) && tablero.getPiezaEnCasilla(i, j).distintoColor(color))
+                    return true;
+            }
+        return false;
     }
 }

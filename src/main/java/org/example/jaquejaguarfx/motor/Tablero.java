@@ -254,10 +254,10 @@ public class Tablero {
 
     public void inicializarDEBUG(){
         //Reyes
-        getCasilla('e',3).setPieza( new Rey(Color.BLANCO) );
-        getCasilla('e',6).setPieza( new Rey(Color.NEGRO) );
+        getCasilla('a',1).setPieza( new Rey(Color.BLANCO) );
+        getCasilla('f',8).setPieza( new Rey(Color.NEGRO) );
 
-        getCasilla('h',7).setPieza( new Torre(Color.BLANCO) );
-        getCasilla('h',6).setPieza( new Reina(Color.BLANCO));
+        getCasilla('e',6).setPieza( new Torre(Color.BLANCO) );
+        getCasilla('d',5).setPieza( new Reina(Color.BLANCO));
     }
 }

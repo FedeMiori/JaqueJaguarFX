@@ -1,6 +1,7 @@
 package org.example.jaquejaguarfx;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -145,43 +146,53 @@ public class VentanaAjedrez extends Application {
 
     public void anunciarTurno(Object objet){
         String mensajeTurno = " Turno de: " + objet.toString();
-        //primaryStage.setTitle(TITULO_VENTANA + mensajeTurno);
-        //mostrarMensaje(mensajeTurno, 2);
+        cambiarCabezeraVentana(TITULO_VENTANA + "     " + mensajeTurno);
+        mostrarMensaje(mensajeTurno, 1);
     }
-//
-//    public void mensajeFinPartida(String jugadorGanador){
-//
-//    }
-//
-//    public void mostrarMensaje(String mensaje, int segundos) {
-//        // Crear una etiqueta con el mensaje
-//        javafx.scene.control.Label etiqueta = new javafx.scene.control.Label(mensaje);
-//        etiqueta.setStyle("-fx-font-size: 48px; -fx-text-fill: red; -fx-font-weight: bold; " +
-//                "-fx-background-color: rgba(255,255,255,0.75); -fx-padding: 20px;");
-//        etiqueta.setWrapText(true); // Permitir que el texto se divida en varias líneas si es necesario
-//
-//        // Crear un contenedor para centrar la etiqueta
-//        StackPane contenedorMensaje = new StackPane(etiqueta);
-//        contenedorMensaje.setPickOnBounds(false); // Permite que los clics pasen al contenido de abajo
-//        contenedorMensaje.setMouseTransparent(true); // No intercepta eventos del ratón
-//
-//        // Hacer que el contenedor ocupe toda la ventana
-//        contenedorMensaje.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-//        StackPane.setAlignment(etiqueta, javafx.geometry.Pos.CENTER); // Centrar el texto
-//
-//        // Añadir el mensaje a la raíz de la escena
-//        StackPane raiz = (StackPane) primaryStage.getScene().getRoot();
-//        raiz.getChildren().add(contenedorMensaje);
-//
-//        // Si se indica una duración (segundos > 0), programar su desaparición
-//        if (segundos != -1) {
-//            javafx.animation.PauseTransition espera = new javafx.animation.PauseTransition(
-//                    javafx.util.Duration.seconds(segundos)
-//            );
-//            espera.setOnFinished(evento -> raiz.getChildren().remove(contenedorMensaje));
-//            espera.play();
-//        }
-//    }
+
+    public void mensajeFinPartida(String jugadorGanador){
+        String mensajeFinPartida = " FIN PARTIDA GANADOR: "+jugadorGanador.toUpperCase();
+        cambiarCabezeraVentana(TITULO_VENTANA + mensajeFinPartida);
+        mostrarMensaje(mensajeFinPartida, -1);
+    }
+
+    public void mostrarMensaje(String mensaje, int segundos) {
+        Platform.runLater(() -> {
+            // Crear una etiqueta con el mensaje
+            javafx.scene.control.Label etiqueta = new javafx.scene.control.Label(mensaje);
+            etiqueta.setStyle("-fx-font-size: 48px; -fx-text-fill: red; -fx-font-weight: bold; " +
+                    "-fx-background-color: rgba(255,255,255,0.75); -fx-padding: 20px;");
+            etiqueta.setWrapText(true); // Permitir que el texto se divida en varias líneas si es necesario
+
+            // Crear un contenedor para centrar la etiqueta
+            StackPane contenedorMensaje = new StackPane(etiqueta);
+            contenedorMensaje.setPickOnBounds(false); // Permite que los clics pasen al contenido de abajo
+            contenedorMensaje.setMouseTransparent(true); // No intercepta eventos del ratón
+
+            // Hacer que el contenedor ocupe toda la ventana
+            contenedorMensaje.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            StackPane.setAlignment(etiqueta, javafx.geometry.Pos.CENTER); // Centrar el texto
+
+            // Añadir el mensaje a la raíz de la escena
+            StackPane raiz = (StackPane) primaryStage.getScene().getRoot();
+            raiz.getChildren().add(contenedorMensaje);
+
+            // Si se indica una duración (segundos > 0), programar su desaparición
+            if (segundos != -1) {
+                javafx.animation.PauseTransition espera = new javafx.animation.PauseTransition(
+                        javafx.util.Duration.seconds(segundos)
+                );
+                espera.setOnFinished(evento -> raiz.getChildren().remove(contenedorMensaje));
+                espera.play();
+            }
+        });
+    }
+
+    private void cambiarCabezeraVentana(String mensaje){
+        Platform.runLater(() -> {
+            primaryStage.setTitle(mensaje);
+        });
+    }
 
 
     public static void main(String[] args) {
