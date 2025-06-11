@@ -70,20 +70,20 @@ public class EstadoPartida {
 
     //Comprueba Jaque Mate
     private boolean jaqueJaguar(Posicion posicionAmenazante, Posicion posicionRey){
-        boolean jaqueJaguar = false;
+        boolean jaqueJaguar = true;
         List<Posicion> listaPosiblesBloqueos = tablero.getListaPosicionesIntermedias(posicionAmenazante,posicionRey);
         Color colorDelRey = tablero.getPiezaEnCasilla(posicionRey).getColor();
         Boolean bloqueoEncontrado, comerAlAtacante, huidaDelRey;
         int i=0, j;
         while(i < ANCHO_TABLERO){
             j=0;
-            while(j < ALTO_TABLERO && !jaqueJaguar){
+            while(j < ALTO_TABLERO && jaqueJaguar){
                 Pieza posibleDefensora = tablero.getPiezaEnCasilla(i,j);
                 if(posibleDefensora != null && posibleDefensora.esDeColor(colorDelRey)) {
                     comerAlAtacante = tablero.movimientoPosible(new Posicion(i,j),posicionAmenazante);
                     bloqueoEncontrado = puedeDefender(new Posicion(i, j), listaPosiblesBloqueos);
                     huidaDelRey = calcularHuidaRey(posicionRey);
-                    jaqueJaguar |= !bloqueoEncontrado && !comerAlAtacante && !huidaDelRey;
+                    jaqueJaguar &= !bloqueoEncontrado && !comerAlAtacante && !huidaDelRey;
                 }
                 j++;
             }

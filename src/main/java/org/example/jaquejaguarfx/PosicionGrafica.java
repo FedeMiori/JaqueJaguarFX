@@ -21,13 +21,4 @@ public class PosicionGrafica extends Posicion {
                 getPosY() * TAMANIO_CASILLA //+ TAMANIO_CASILLA/2
         };
     }
-
-    public static void main(String[] args) {
-//        PosicionGrafica posicion = new PosicionGrafica(2,1);
-//        int[] coordenadas = posicion.getCoordenadasPixeles();
-//        System.out.println(coordenadas[0] + "," + coordenadas[1]);
-
-        PosicionGrafica posicionGrafica = generarPosicionPorPixeles(10000,80);
-        System.out.println(posicionGrafica.getNotacionAlgebraica());
-    }
 }

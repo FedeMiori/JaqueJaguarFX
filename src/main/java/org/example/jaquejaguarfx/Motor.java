@@ -5,8 +5,6 @@ import org.example.jaquejaguarfx.motor.Jugador;
 import org.example.jaquejaguarfx.motor.Tablero;
 import org.example.jaquejaguarfx.motor.tiposPieza.Color;
 
-import java.sql.SQLOutput;
-
 public class Motor implements Runnable{
     private VentanaAjedrez gestorventana;
     private Jugador[] jugadores;
@@ -17,7 +15,7 @@ public class Motor implements Runnable{
     public Motor(VentanaAjedrez gestorventana){
         this.gestorventana = gestorventana;
         this.tablero = new Tablero();
-        tablero.inicializarDEBUG();
+        tablero.inicializar();
         jugadores = new Jugador[] {
                 new Jugador("Jugador Blancas", Color.BLANCO),
                 new Jugador("Jugador Negras", Color.NEGRO)
@@ -33,18 +31,11 @@ public class Motor implements Runnable{
     public void run() {
         Jugador jugadorConTurno;
         do{
-            System.out.println("TURNO DE: "+estadoPartida.quienTieneTurno());
             jugadorConTurno = estadoPartida.quienTieneTurno();
             gestorventana.anunciarTurno(jugadorConTurno);
             while(!jugadorConTurno.moverPieza(gestorventana, tablero));
             estadoPartida.siguienteTurno();
         }while(!estadoPartida.finPartida());
         gestorventana.mensajeFinPartida(estadoPartida.quienHaGanado().toString());
-        System.out.println("FIN PARTIDA");
-        //gestorventana.mensajeFinPartida(estadoPartida.quienHaGanado().toString());
-    }
-
-    public void holaMundo(){
-        System.out.println("Hola Mundo");
     }
 }

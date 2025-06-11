@@ -16,17 +16,13 @@ public class Jugador {
     public Color getColor() {return color;}
 
     public boolean moverPieza(VentanaAjedrez ventana, Tablero tablero){
-        boolean exito = false;
         Posicion[] movimiento = ventana.registrarMovimiento();
-        System.out.println(movimiento[0].getNotacionAlgebraica() + " -> " + movimiento[1].getNotacionAlgebraica());
-        if(tablero.moverPieza(movimiento[0], movimiento[1],this.color)) {
-            ventana.moverPieza((PosicionGrafica) movimiento[0], (PosicionGrafica) movimiento[1]);
-            exito = true;
+        PosicionGrafica origen = (PosicionGrafica) movimiento[0], destino = (PosicionGrafica) movimiento[1];
+        if(tablero.moverPieza(origen, destino,this.color)) {
+            ventana.moverPieza(origen,destino);
+            return true;
         }
-//        Posicion origen = Posicion.pedirUsuario("Posicion de pieza a mover: ");
-//        Posicion destino = Posicion.pedirUsuario("Posicion destino de la pieza");
-//        return tablero.moverPieza(origen,destino,this.color);
-        return exito;
+        return false;
     }
 
     public boolean esDeColor(Color color){

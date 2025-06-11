@@ -10,16 +10,13 @@ import java.util.List;
 public class Tablero {
     public final int ALTO_TABLERO = 8;
     public final int ANCHO_TABLERO = 8;
-    private static final String anchoGuion = "-" + "\u3000" + "-";  // —
 
     private Casilla[][] casillas = new Casilla[ALTO_TABLERO][ANCHO_TABLERO];
 
     public Tablero(){
-        for (int i = 0; i < ALTO_TABLERO; i++) {
-            for (int j = 0; j < ANCHO_TABLERO; j++) {
+        for (int i = 0; i < ALTO_TABLERO; i++)
+            for (int j = 0; j < ANCHO_TABLERO; j++)
                 casillas[i][j] = new Casilla( new Posicion(i,j) );
-            }
-        }
     }
 
     public Casilla getCasilla(char letra, int numero){
@@ -63,41 +60,6 @@ public class Tablero {
             return null;
     }
 
-    /**
-     * Metodo que dibuja un tablero muy detallado por la terminal
-     */
-    public void printTablero(){
-        System.out.print("   ");
-        for (int i = 0; i < ANCHO_TABLERO; i++) {
-            System.out.print("  "+(char) ('a'+i)+"\u3000");
-        }
-        System.out.println();
-
-        for (int i = ALTO_TABLERO -1; i >=0; i--) {
-            System.out.print("   ");
-            for (int j = 0; j < ANCHO_TABLERO; j++) {
-                System.out.print("+" + anchoGuion);
-            }
-            System.out.println("+");
-
-            System.out.print((i+1)+"  ");
-            for (int j = 0; j < ANCHO_TABLERO; j++) {
-                System.out.print("| "+casillas[j][i].toString()+" ");
-            }
-            System.out.println("|  "+(i+1));
-        }
-        System.out.print("   ");
-        for (int j = 0; j < ANCHO_TABLERO; j++) {
-            System.out.print("+"+anchoGuion);
-        }
-        System.out.println("+");
-        System.out.print("   ");
-        for (int i = 0; i < ANCHO_TABLERO; i++) {
-            System.out.print("  "+(char) ('a'+i)+"\u3000");
-        }
-        System.out.println();
-    }
-    
     public void inicializar(){
         //Colocamos peones
         for (int i = 0; i < ANCHO_TABLERO; i++) {
@@ -146,7 +108,7 @@ public class Tablero {
      * Metodo que mueve la pieza situalda en posicionOrigen a la posicionDestino
      * Tiene en cuenta toda la casuistica para ver si se puede realizar ese movimiento
      */
-    public boolean moverPieza(Posicion posicionOrigen, Posicion posicionDestino){
+    private boolean moverPieza(Posicion posicionOrigen, Posicion posicionDestino){
         Pieza piezaAMover = getPiezaEnCasilla(posicionOrigen);
         if(movimientoPosible(posicionOrigen,posicionDestino)){
             piezaAMover.incrementarNumMovimientos();
@@ -166,15 +128,19 @@ public class Tablero {
         Pieza piezaEnDestino = getPiezaEnCasilla(posicionDestino);
         int[] vectorMovimiento = posicionOrigen.getVector( posicionDestino );
 
+        if(posicionOrigen.equals(new Posicion("a4")) && posicionDestino.equals(new Posicion("b5")))
+            System.out.println("DEBUG");
+
         //Comprueba que las posiciones estén dentro del tablero
         if(posicionOrigen.dentroLimites(ALTO_TABLERO, ANCHO_TABLERO) && posicionDestino.dentroLimites(ALTO_TABLERO, ANCHO_TABLERO)){
             //Consulta a la pieza si puede hacer ese movimiento (Aprovechando el polimorfismo)
-            if(piezaAMover != null && piezaAMover.movimientoValido(vectorMovimiento))
+            if(piezaAMover != null && piezaAMover.movimientoValido(vectorMovimiento)) {
                 //Comprueba que no haya ninguna ficha entre las 2 posiciones excepto que sea un caballo
                 if (caminoDespejado(posicionOrigen, posicionDestino) || piezaAMover instanceof Caballo)
                     //Comprueba que la casilla destino esté vacia o que contenga una ficha adversaria
                     if (piezaEnDestino == null || piezaEnDestino.distintoColor(piezaAMover))
                         puedeMoverse = true;
+            }
 
             //Aquí se tiene en cuenta la situacion particular en la que el peon puede comer moviendose en diagonal
             else if(piezaAMover instanceof Peon && piezaAMover.movimientoValido(vectorMovimiento, piezaEnDestino))
@@ -250,14 +216,5 @@ public class Tablero {
             i++;
         }
         return resultadoBusqueda;
-    }
-
-    public void inicializarDEBUG(){
-        //Reyes
-        getCasilla('a',1).setPieza( new Rey(Color.BLANCO) );
-        getCasilla('f',8).setPieza( new Rey(Color.NEGRO) );
-
-        getCasilla('e',6).setPieza( new Torre(Color.BLANCO) );
-        getCasilla('d',5).setPieza( new Reina(Color.BLANCO));
     }
 }

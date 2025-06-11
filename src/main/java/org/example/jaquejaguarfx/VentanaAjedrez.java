@@ -64,7 +64,6 @@ public class VentanaAjedrez extends Application {
     }
 
     private void crearTablero(GridPane grid){
-        // Crear tablero
         for (int y = 0; y < ALTO; y++) {
             for (int x = 0; x < ANCHO; x++) {
                 Casilla tile = new Casilla((x + y) % 2 == 0);
@@ -135,11 +134,9 @@ public class VentanaAjedrez extends Application {
         setUltimaPosicionOrigen(null);
         setUltimaPosicionDestino(null);
         sePuedeMover = true;
-        System.out.println("Esperando movimiento");
         while (getUltimaPosicionOrigen() == null || getUltimaPosicionDestino() == null);
         //mientras que uno de los 2 sea nulo
 
-        System.out.println("Movimiento registrado bloqueando interfaz...");
         sePuedeMover = false;
         return new Posicion[] {ultimaPosicionOrigen,ultimaPosicionDestino};
     }
@@ -147,7 +144,7 @@ public class VentanaAjedrez extends Application {
     public void anunciarTurno(Object objet){
         String mensajeTurno = " Turno de: " + objet.toString();
         cambiarCabezeraVentana(TITULO_VENTANA + "     " + mensajeTurno);
-        mostrarMensaje(mensajeTurno, 1);
+        //mostrarMensaje(mensajeTurno, 1);
     }
 
     public void mensajeFinPartida(String jugadorGanador){
@@ -239,14 +236,9 @@ public class VentanaAjedrez extends Application {
                 int newX = (int) (getLayoutX() + DIMENSION_CASILLA / 2) / DIMENSION_CASILLA;
                 int newY = (int) (getLayoutY() + DIMENSION_CASILLA / 2) / DIMENSION_CASILLA;
 
-                if (newX >= 0 && newX < ANCHO && newY >= 0 && newY < ALTO) {
+                if (newX >= 0 && newX < ANCHO && newY >= 0 && newY < ALTO)
                     ultimaPosicionDestino = new PosicionGrafica(newX,newY);
-                    recolocar(ultimaPosicionOrigen);
-                    //moverPieza(ultimaPosicionOrigen,ultimaPosicionDestino);
-                } else {
-                    recolocar(ultimaPosicionOrigen);
-                }
-
+                recolocar(ultimaPosicionOrigen);
             });
         }
         private void recolocar(PosicionGrafica posicion){
