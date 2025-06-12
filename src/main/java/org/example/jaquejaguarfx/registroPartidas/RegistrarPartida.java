@@ -20,8 +20,8 @@ public class RegistrarPartida {
 
     public void aniadirEstadoTablero(Tablero tablero) {
         List<String> estadoTablero = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < tablero.ANCHO_TABLERO; i++) {
+            for (int j = 0; j < tablero.ALTO_TABLERO; j++) {
                 Pieza pieza = tablero.getPiezaEnCasilla(i, j);
                 if (pieza != null) {
                     estadoTablero.add(pieza.toString());
@@ -43,8 +43,12 @@ public class RegistrarPartida {
         int dia = fechaActual.getDayOfMonth();
         String mes = fechaActual.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
         int anio = fechaActual.getYear();
-        int hora = fechaActual.getHour();
-        int minuto = fechaActual.getMinute();
+        String hora = String.valueOf(fechaActual.getHour());
+        if(hora.length() == 1)
+            hora = "0" + hora;
+        String minuto = String.valueOf(fechaActual.getMinute());
+        if(minuto.length() == 1)
+            minuto = "0" + minuto;
         partidasWrapper.setFecha_hora(dia+" de "+mes+" de "+anio+", "+hora+":"+minuto);
     }
 

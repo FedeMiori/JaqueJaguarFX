@@ -24,7 +24,7 @@ public class Peon extends Pieza {
     }
 
     public boolean peonPuedeComer(int[] vectorMovimiento, Pieza piezaAComer){
-        boolean puede = movimientoValido(vectorMovimiento);
+        boolean puede = movimientoValido(vectorMovimiento) && piezaAComer == null;
 
         if( piezaAComer != null && this.distintoColor(piezaAComer)
                 && movimientoValidoComiendo(vectorMovimiento))

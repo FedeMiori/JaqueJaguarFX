@@ -127,7 +127,7 @@ public class Tablero {
         //Comprueba que las posiciones estén dentro del tablero
         if(posicionOrigen.dentroLimites(ALTO_TABLERO, ANCHO_TABLERO) && posicionDestino.dentroLimites(ALTO_TABLERO, ANCHO_TABLERO)){
             //Consulta a la pieza si puede hacer ese movimiento (Aprovechando el polimorfismo)
-            if(piezaAMover != null && piezaAMover.movimientoValido(vectorMovimiento)) {
+            if(piezaAMover != null && piezaAMover.movimientoValido(vectorMovimiento) && !(piezaAMover instanceof Peon)) {
                 //Comprueba que no haya ninguna ficha entre las 2 posiciones excepto que sea un caballo
                 if (caminoDespejado(posicionOrigen, posicionDestino) || piezaAMover instanceof Caballo)
                     //Comprueba que la casilla destino esté vacia o que contenga una ficha adversaria
