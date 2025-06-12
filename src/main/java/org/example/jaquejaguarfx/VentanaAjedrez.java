@@ -1,12 +1,18 @@
 package org.example.jaquejaguarfx;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.example.jaquejaguarfx.motor.Posicion;
 import org.example.jaquejaguarfx.motor.Tablero;
 
@@ -45,20 +51,21 @@ public class VentanaAjedrez extends Application {
     @Override
     public void start(Stage primaryStage) {
         GridPane grid = new GridPane();
-        Motor motor = new Motor(this);
+        Motor motorJuego = new Motor(this);
 
         crearTablero(grid);
 
-        inicializarTablero(motor.getTablero());
+        inicializarTablero(motorJuego.getTablero());
 
         StackPane root = new StackPane(grid, pieceLayer);
         Scene scene = new Scene(root, DIMENSION_CASILLA * ANCHO, DIMENSION_CASILLA * ALTO);
         primaryStage.setTitle(TITULO_VENTANA);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
         this.primaryStage = primaryStage;
 
-        Thread hiloMotor = new Thread(motor);
+        Thread hiloMotor = new Thread(motorJuego);
         hiloMotor.setDaemon(true); // para que no impida cerrar la aplicación
         hiloMotor.start();
     }
@@ -125,11 +132,6 @@ public class VentanaAjedrez extends Application {
         }
     }
 
-    //No deshace la captura, arreglar si hace falta
-    public void deshacerMovimiento(){
-        moverPieza(ultimaPosicionDestino,ultimaPosicionOrigen);
-    }
-
     public Posicion[] registrarMovimiento() {
         setUltimaPosicionOrigen(null);
         setUltimaPosicionDestino(null);
@@ -141,10 +143,46 @@ public class VentanaAjedrez extends Application {
         return new Posicion[] {ultimaPosicionOrigen,ultimaPosicionDestino};
     }
 
+    public void efectoShake(PosicionGrafica posicion) {
+        Platform.runLater(() -> {
+            double targetX = posicion.getCoordenadasPixeles()[0];
+            double targetY = posicion.getCoordenadasPixeles()[1];
+
+            for (javafx.scene.Node node : pieceLayer.getChildren()) {
+                if (node instanceof PiezaGrafica) {
+                    PiezaGrafica pieza = (PiezaGrafica) node;
+                    if (pieza.getLayoutX() == targetX && pieza.getLayoutY() == targetY) {
+
+                        final int shakeDistance = 10;
+                        final Duration shakeDuration = Duration.millis(50);
+
+                        TranslateTransition moveLeft = new TranslateTransition(shakeDuration, pieza);
+                        moveLeft.setByX(-shakeDistance);
+
+                        TranslateTransition moveRight = new TranslateTransition(shakeDuration, pieza);
+                        moveRight.setByX(shakeDistance * 2);
+
+                        TranslateTransition moveBack = new TranslateTransition(shakeDuration, pieza);
+                        moveBack.setByX(-shakeDistance);
+
+                        SequentialTransition shake = new SequentialTransition(
+                                moveLeft,
+                                moveRight,
+                                moveBack
+                        );
+
+                        shake.play();
+                        return;
+                    }
+                }
+            }
+        });
+    }
+
     public void anunciarTurno(Object objet){
         String mensajeTurno = " Turno de: " + objet.toString();
         cambiarCabezeraVentana(TITULO_VENTANA + "     " + mensajeTurno);
-        //mostrarMensaje(mensajeTurno, 1);
+        mostrarMensaje(mensajeTurno, 0.75);
     }
 
     public void mensajeFinPartida(String jugadorGanador){
@@ -153,33 +191,41 @@ public class VentanaAjedrez extends Application {
         mostrarMensaje(mensajeFinPartida, -1);
     }
 
-    public void mostrarMensaje(String mensaje, int segundos) {
+    public void mostrarMensaje(String mensaje, double segundos) {
         Platform.runLater(() -> {
-            // Crear una etiqueta con el mensaje
-            javafx.scene.control.Label etiqueta = new javafx.scene.control.Label(mensaje);
-            etiqueta.setStyle("-fx-font-size: 48px; -fx-text-fill: red; -fx-font-weight: bold; " +
-                    "-fx-background-color: rgba(255,255,255,0.75); -fx-padding: 20px;");
-            etiqueta.setWrapText(true); // Permitir que el texto se divida en varias líneas si es necesario
+            Label etiqueta = new Label(mensaje);
+            etiqueta.setStyle(
+                    "-fx-font-size: 24px;" +
+                            "-fx-text-fill: white;" +
+                            "-fx-padding: 20px 30px;" +
+                            "-fx-background-color: rgba(30, 30, 30, 0.9);" +
+                            "-fx-background-radius: 12;" +
+                            "-fx-effect: dropshadow(gaussian, black, 15, 0.4, 0, 2);" +
+                            "-fx-font-weight: bold;"
+            );
 
-            // Crear un contenedor para centrar la etiqueta
             StackPane contenedorMensaje = new StackPane(etiqueta);
-            contenedorMensaje.setPickOnBounds(false); // Permite que los clics pasen al contenido de abajo
-            contenedorMensaje.setMouseTransparent(true); // No intercepta eventos del ratón
+            contenedorMensaje.setMouseTransparent(true);
+            contenedorMensaje.setPickOnBounds(false);
+            StackPane.setAlignment(etiqueta, javafx.geometry.Pos.CENTER);
 
-            // Hacer que el contenedor ocupe toda la ventana
-            contenedorMensaje.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-            StackPane.setAlignment(etiqueta, javafx.geometry.Pos.CENTER); // Centrar el texto
-
-            // Añadir el mensaje a la raíz de la escena
             StackPane raiz = (StackPane) primaryStage.getScene().getRoot();
             raiz.getChildren().add(contenedorMensaje);
 
-            // Si se indica una duración (segundos > 0), programar su desaparición
-            if (segundos != -1) {
-                javafx.animation.PauseTransition espera = new javafx.animation.PauseTransition(
-                        javafx.util.Duration.seconds(segundos)
-                );
-                espera.setOnFinished(evento -> raiz.getChildren().remove(contenedorMensaje));
+            FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.4), contenedorMensaje);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.4), contenedorMensaje);
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(e -> raiz.getChildren().remove(contenedorMensaje));
+
+            fadeIn.play();
+
+            if (segundos > 0) {
+                PauseTransition espera = new PauseTransition(Duration.seconds(segundos));
+                espera.setOnFinished(e -> fadeOut.play());
                 espera.play();
             }
         });
@@ -190,7 +236,6 @@ public class VentanaAjedrez extends Application {
             primaryStage.setTitle(mensaje);
         });
     }
-
 
     public static void main(String[] args) {
         launch(args);

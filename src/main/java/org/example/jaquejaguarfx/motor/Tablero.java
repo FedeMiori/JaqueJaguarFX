@@ -98,10 +98,8 @@ public class Tablero {
         Pieza piezaEnOrigen = getPiezaEnCasilla(posicionOrigen);
         if(piezaEnOrigen != null && piezaEnOrigen.esDeColor(colorJugador))
             return moverPieza(posicionOrigen,posicionDestino);
-        else {
-            System.out.println("\nERROR: El jugador no puede mover esta pieza");
+        else
             return false;
-        }
     }
 
     /**
@@ -116,10 +114,8 @@ public class Tablero {
             getCasilla(posicionDestino).setPieza(piezaAMover);
             return true;
         }
-        else {
-            System.out.println("\nERROR: No se pudo realizar el movimiento");
+        else
             return false;
-        }
     }
 
     public boolean movimientoPosible(Posicion posicionOrigen, Posicion posicionDestino){
@@ -127,9 +123,6 @@ public class Tablero {
         Pieza piezaAMover = getPiezaEnCasilla(posicionOrigen);
         Pieza piezaEnDestino = getPiezaEnCasilla(posicionDestino);
         int[] vectorMovimiento = posicionOrigen.getVector( posicionDestino );
-
-        if(posicionOrigen.equals(new Posicion("a4")) && posicionDestino.equals(new Posicion("b5")))
-            System.out.println("DEBUG");
 
         //Comprueba que las posiciones estén dentro del tablero
         if(posicionOrigen.dentroLimites(ALTO_TABLERO, ANCHO_TABLERO) && posicionDestino.dentroLimites(ALTO_TABLERO, ANCHO_TABLERO)){
@@ -151,10 +144,10 @@ public class Tablero {
     }
 
     /**
-     * Metodo que indica si las casillas intermedias entre dos posiciones estan vacias
+     * Método que indica si las casillas intermedias entre dos posiciones están vacías
      * sirve para ver si una pieza que no sea un caballo tiene el camino despejado para autorizar el movimiento
-     * @param origen posicion origen del movimiento
-     * @param destino posicion ddestino del movimiento
+     * @param origen posición origen del movimiento
+     * @param destino posición destino del movimiento
      * @return devuelve true si la trayectoria entre los dos puntos no tiene piezas
      */
     public boolean caminoDespejado(Posicion origen, Posicion destino){

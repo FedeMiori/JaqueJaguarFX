@@ -22,6 +22,8 @@ public class Jugador {
             ventana.moverPieza(origen,destino);
             return true;
         }
+        else
+            ventana.efectoShake(origen);
         return false;
     }
 
