@@ -4,6 +4,7 @@ module org.example.jaquejaguarfx {
     requires java.sql;
     requires org.mongodb.driver.sync.client;
     requires org.mongodb.bson;
+    requires org.mongodb.driver.core;
 
 
     opens org.example.jaquejaguarfx to javafx.fxml;
