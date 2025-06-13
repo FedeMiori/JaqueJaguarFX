@@ -61,6 +61,7 @@ public class RegistrarPartida {
             coleccion.insertOne(partidaNueva);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
