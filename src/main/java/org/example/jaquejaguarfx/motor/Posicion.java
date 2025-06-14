@@ -1,7 +1,5 @@
 package org.example.jaquejaguarfx.motor;
 
-import java.util.Scanner;
-
 public class Posicion {
     private int posX;
     private int posY;
@@ -22,25 +20,12 @@ public class Posicion {
         posY = (int) notacionAlgebraica.charAt(1) - 49;
     }
 
-    public Posicion(char letra, int numero){
-        this.posX = (int) letra - 'a';
-        this.posY = numero - 1;
-    }
-
     public int getPosX() {
         return posX;
     }
 
     public int getPosY() {
         return posY;
-    }
-
-    //Convierte a notacion algebraica
-    // Ej: dado posX=1 y posY=1 devuelve "B2"
-    public String getNotacionAlgebraica(){
-        char letra = (char) ('a' + posX);
-        int numero = posY + 1;
-        return ""+letra + numero;
     }
 
     /**
@@ -72,27 +57,6 @@ public class Posicion {
         int componenteI = posicionDestino.getPosX() - posX;
         int componenteJ = posicionDestino.getPosY() - posY;
         return new int[] {componenteI, componenteJ};
-    }
-
-    /**
-     * Funcion estatica que pide una posicion al usuario
-     * @param mensaje mensaje a mostrar por pantalla
-     * @return devuelve la posicion dada por el usuario
-     */
-    public static Posicion pedirUsuario(String mensaje){
-        if(mensaje != null)
-            System.out.println(mensaje);
-        Scanner teclado = new Scanner(System.in);
-        String entrada=teclado.nextLine();
-        if(formatoCorreccto(entrada))
-            return new Posicion(entrada);
-        else
-            return pedirUsuario("ERROR: formato Invalido");
-    }
-
-    //Comprueba si el string pasado como parametro tiene el formato [letra][numero] Ej: "b5"
-    public static boolean formatoCorreccto(String cadena){
-        return cadena.matches("^[a-z][0-9]");
     }
 
     /**

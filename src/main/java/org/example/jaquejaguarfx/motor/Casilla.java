@@ -5,7 +5,7 @@ import org.example.jaquejaguarfx.motor.tiposPieza.Pieza;
 public class Casilla {
     private Posicion posicion;
     private Pieza pieza;
-    private static final String invisiblePlaceholder = "\u3000"; // Espacio ideográfico
+    private static final String espacioIdeografico = "\u3000";
 
 
     public Casilla(Posicion posicion) {
@@ -24,7 +24,7 @@ public class Casilla {
 
     public String toString(){
         if(pieza ==null)
-            return invisiblePlaceholder;
+            return espacioIdeografico;
         else
             return pieza.toString();
     }

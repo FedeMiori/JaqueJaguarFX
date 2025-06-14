@@ -28,8 +28,4 @@ public class PartidasWrapper {
     public List<List<String>> getEstados_tablero() {
         return estados_tablero;
     }
-
-    public void setEstados_tablero(List<List<String>> estados_tablero) {
-        this.estados_tablero = estados_tablero;
-    }
 }

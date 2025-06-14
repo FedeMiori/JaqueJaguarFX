@@ -3,10 +3,6 @@ public abstract class Pieza {
     private final char letra;
     protected Color color;
 
-    final String parametroVerde = "\u001B[38;2;55;139;71m";
-    final String parametroNegrita = "\033[0;1m";
-    final String resetTipografia = "\u001B[0m";
-
     private int numMovimientos;
 
     public Pieza(char letra, Color color) {

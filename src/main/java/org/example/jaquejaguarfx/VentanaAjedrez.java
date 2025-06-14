@@ -55,11 +55,9 @@ public class VentanaAjedrez extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
-        // Pantalla de inicio
-        StackPane startRoot = new StackPane();
-        startRoot.setStyle("-fx-background-color: beige;");
+        StackPane ventana = new StackPane();
+        ventana.setStyle("-fx-background-color: beige;");
 
-        // Estilo único para los TextField de nombres
         String estiloTextFieldNegro =
                 "-fx-font-size: 18px;" +
                         "-fx-padding: 10px;" +
@@ -67,11 +65,10 @@ public class VentanaAjedrez extends Application {
                         "-fx-border-radius: 8;" +
                         "-fx-border-color: #888;" +
                         "-fx-border-width: 1px;" +
-                        "-fx-background-color: #222;" +      // Fondo negro
-                        "-fx-text-fill: white;" +            // Texto blanco
-                        "-fx-prompt-text-fill: #bbb;";       // Texto de sugerencia gris claro
+                        "-fx-background-color: #222;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-prompt-text-fill: #bbb;";
 
-        // Cajas de texto para nombres de jugadores
         javafx.scene.control.TextField nombreBlancas = new javafx.scene.control.TextField();
         nombreBlancas.setPromptText("Nombre Jugador Blancas");
         nombreBlancas.setMaxWidth(440);
@@ -82,7 +79,6 @@ public class VentanaAjedrez extends Application {
         nombreNegras.setMaxWidth(440);
         nombreNegras.setStyle(estiloTextFieldNegro);
 
-        // Botón principal "Empezar"
         javafx.scene.control.Button botonEmpezar = new javafx.scene.control.Button("Empezar");
         botonEmpezar.setStyle(
                 "-fx-font-size: 24px;" +
@@ -93,9 +89,8 @@ public class VentanaAjedrez extends Application {
                         "-fx-effect: dropshadow(gaussian, black, 15, 0.4, 0, 2);" +
                         "-fx-font-weight: bold;"
         );
-        botonEmpezar.setMinWidth(440); // Duplicado de 220 a 440
+        botonEmpezar.setMinWidth(440);
 
-        // Botones pequeños "Web" y "Salir"
         javafx.scene.control.Button botonWeb = new javafx.scene.control.Button("Web");
         javafx.scene.control.Button botonSalir = new javafx.scene.control.Button("Salir");
 
@@ -107,35 +102,32 @@ public class VentanaAjedrez extends Application {
                         "-fx-background-radius: 8;" +
                         "-fx-effect: dropshadow(gaussian, black, 10, 0.3, 0, 1);" +
                         "-fx-font-weight: bold;" +
-                        "-fx-min-width: 215px;" + // Duplicado de 105 a 215 (2x215 + 10 = 440)
+                        "-fx-min-width: 215px;" +
                         "-fx-max-width: 215px;";
 
         botonWeb.setStyle(estiloBotonPeque);
         botonSalir.setStyle(estiloBotonPeque);
 
-        // Acciones de los botones pequeños
         botonWeb.setOnAction(e -> getHostServices().showDocument("http:\\federicop.duckdns.org"));
         botonSalir.setOnAction(e -> Platform.exit());
 
-        // HBox para los botones pequeños
-        HBox hboxBotonesPeque = new HBox(10, botonWeb, botonSalir); // 10px de espacio entre ellos
+        HBox hboxBotonesPeque = new HBox(10, botonWeb, botonSalir);
         hboxBotonesPeque.setAlignment(javafx.geometry.Pos.CENTER);
 
         VBox vbox = new VBox(20, nombreBlancas, nombreNegras, botonEmpezar, hboxBotonesPeque);
         vbox.setAlignment(javafx.geometry.Pos.CENTER);
 
-        startRoot.getChildren().add(vbox);
+        ventana.getChildren().add(vbox);
 
-        // Guardar los nombres al pulsar "Empezar"
         botonEmpezar.setOnAction(e -> {
             iniciarJuego(
                     new String[] {nombreBlancas.getText(), nombreNegras.getText()}
             );
         });
 
-        Scene startScene = new Scene(startRoot, DIMENSION_CASILLA * ANCHO, DIMENSION_CASILLA * ALTO);
+        Scene escenaPrincipal = new Scene(ventana, DIMENSION_CASILLA * ANCHO, DIMENSION_CASILLA * ALTO);
         primaryStage.setTitle(TITULO_VENTANA);
-        primaryStage.setScene(startScene);
+        primaryStage.setScene(escenaPrincipal);
         primaryStage.setResizable(false);
         primaryStage.show();
     }
@@ -154,7 +146,7 @@ public class VentanaAjedrez extends Application {
         primaryStage.setScene(scene);
 
         Thread hiloMotor = new Thread(motorJuego);
-        hiloMotor.setDaemon(true); // para que no impida cerrar la aplicación
+        hiloMotor.setDaemon(true);
         hiloMotor.start();
     }
 
@@ -184,7 +176,6 @@ public class VentanaAjedrez extends Application {
         double origenX = posicionOrigen.getCoordenadasPixeles()[0];
         double origenY = posicionOrigen.getCoordenadasPixeles()[1];;
 
-        // Buscar la pieza en la capa de piezas
         PiezaGrafica piezaAMover = null;
         for (javafx.scene.Node node : pieceLayer.getChildren()) {
             if (node instanceof PiezaGrafica) {
@@ -213,7 +204,7 @@ public class VentanaAjedrez extends Application {
                 PiezaGrafica piece = (PiezaGrafica) node;
                 if (piece.getLayoutX() == targetX && piece.getLayoutY() == targetY) {
                     piece.setVisible(false);
-                    piece.relocate(-DIMENSION_CASILLA, -DIMENSION_CASILLA); // Equivale a (-1, -1)
+                    piece.relocate(-DIMENSION_CASILLA, -DIMENSION_CASILLA);
                     return;
                 }
             }
@@ -225,7 +216,6 @@ public class VentanaAjedrez extends Application {
         setUltimaPosicionDestino(null);
         sePuedeMover = true;
         while (getUltimaPosicionOrigen() == null || getUltimaPosicionDestino() == null);
-        //mientras que uno de los 2 sea nulo
 
         sePuedeMover = false;
         return new Posicion[] {ultimaPosicionOrigen,ultimaPosicionDestino};
@@ -241,22 +231,22 @@ public class VentanaAjedrez extends Application {
                     PiezaGrafica pieza = (PiezaGrafica) node;
                     if (pieza.getLayoutX() == targetX && pieza.getLayoutY() == targetY) {
 
-                        final int shakeDistance = 10;
-                        final Duration shakeDuration = Duration.millis(50);
+                        final int distanciaShake = 10;
+                        final Duration duracionShake = Duration.millis(50);
 
-                        TranslateTransition moveLeft = new TranslateTransition(shakeDuration, pieza);
-                        moveLeft.setByX(-shakeDistance);
+                        TranslateTransition moverIzquierda = new TranslateTransition(duracionShake, pieza);
+                        moverIzquierda.setByX(-distanciaShake);
 
-                        TranslateTransition moveRight = new TranslateTransition(shakeDuration, pieza);
-                        moveRight.setByX(shakeDistance * 2);
+                        TranslateTransition moverDerecha = new TranslateTransition(duracionShake, pieza);
+                        moverDerecha.setByX(distanciaShake * 2);
 
-                        TranslateTransition moveBack = new TranslateTransition(shakeDuration, pieza);
-                        moveBack.setByX(-shakeDistance);
+                        TranslateTransition moverAtras = new TranslateTransition(duracionShake, pieza);
+                        moverAtras.setByX(-distanciaShake);
 
                         SequentialTransition shake = new SequentialTransition(
-                                moveLeft,
-                                moveRight,
-                                moveBack
+                                moverIzquierda,
+                                moverDerecha,
+                                moverAtras
                         );
 
                         shake.play();
@@ -283,13 +273,13 @@ public class VentanaAjedrez extends Application {
         Platform.runLater(() -> {
             Label etiqueta = new Label(mensaje);
             etiqueta.setStyle(
-                    "-fx-font-size: 14px;" + // Tamaño de fuente más pequeño
+                    "-fx-font-size: 14px;" +
                             "-fx-text-fill: white;" +
-                            "-fx-padding: 10px 16px;" + // Menos espacio alrededor del texto
+                            "-fx-padding: 10px 16px;" +
                             "-fx-background-color: rgba(30, 30, 30, 0.9);" +
-                            "-fx-background-radius: 8;" + // Radio más pequeño
-                            "-fx-effect: dropshadow(gaussian, black, 8, 0.3, 0, 1);" + // Sombra más sutil
-                            "-fx-font-weight: normal;" // O puedes dejarlo en bold si prefieres
+                            "-fx-background-radius: 8;" +
+                            "-fx-effect: dropshadow(gaussian, black, 8, 0.3, 0, 1);" +
+                            "-fx-font-weight: normal;"
             );
 
             StackPane contenedorMensaje = new StackPane(etiqueta);
@@ -329,7 +319,6 @@ public class VentanaAjedrez extends Application {
         launch(args);
     }
 
-    // Casilla del tablero
     private static class Casilla extends StackPane {
         public Casilla(boolean light) {
             Rectangle border = new Rectangle(DIMENSION_CASILLA, DIMENSION_CASILLA);
@@ -338,7 +327,6 @@ public class VentanaAjedrez extends Application {
         }
     }
 
-    // Pieza de ajedrez
     private class PiezaGrafica extends StackPane {
         private double mouseX, mouseY;
 

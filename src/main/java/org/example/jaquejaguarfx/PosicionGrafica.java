@@ -9,16 +9,10 @@ public class PosicionGrafica extends Posicion {
         super(posX, posY);
     }
 
-    public static PosicionGrafica generarPosicionPorPixeles(int pixelesX, int pixelesY){
-        int posicionX = pixelesX / TAMANIO_CASILLA;
-        int posicionY = pixelesY / TAMANIO_CASILLA;
-        return new PosicionGrafica(posicionX, posicionY);
-    }
-
     public int[] getCoordenadasPixeles(){
         return new int[] {
-                getPosX() * TAMANIO_CASILLA, //+ TAMANIO_CASILLA/2,
-                getPosY() * TAMANIO_CASILLA //+ TAMANIO_CASILLA/2
+                getPosX() * TAMANIO_CASILLA,
+                getPosY() * TAMANIO_CASILLA
         };
     }
 }

@@ -40,10 +40,6 @@ public class Conexion {
         db = cliente.getDatabase(BASE_DATOS);
     }
 
-    public MongoClient getCliente() {
-        return cliente;
-    }
-
     public MongoDatabase getDb() {
         return db;
     }

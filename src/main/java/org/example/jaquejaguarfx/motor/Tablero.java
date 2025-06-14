@@ -61,35 +61,29 @@ public class Tablero {
     }
 
     public void inicializar(){
-        //Colocamos peones
         for (int i = 0; i < ANCHO_TABLERO; i++) {
             casillas[i][1].setPieza( new Peon(Color.BLANCO) );
             casillas[i][6].setPieza( new Peon(Color.NEGRO) );
         }
 
-        //Colocamos torres:
         getCasilla('a',1).setPieza( new Torre(Color.BLANCO) );
         getCasilla('h',1).setPieza( new Torre(Color.BLANCO) );
         getCasilla('a',8).setPieza( new Torre(Color.NEGRO) );
         getCasilla('h',8).setPieza( new Torre(Color.NEGRO) );
 
-        //Colocamos caballos:
         getCasilla('b',1).setPieza( new Caballo(Color.BLANCO) );
         getCasilla('g',1).setPieza( new Caballo(Color.BLANCO) );
         getCasilla('b',8).setPieza( new Caballo(Color.NEGRO) );
         getCasilla('g',8).setPieza( new Caballo(Color.NEGRO) );
 
-        //Alfiles
         getCasilla('c',1).setPieza( new Alfil(Color.BLANCO) );
         getCasilla('f',1).setPieza( new Alfil(Color.BLANCO) );
         getCasilla('c',8).setPieza( new Alfil(Color.NEGRO) );
         getCasilla('f',8).setPieza( new Alfil(Color.NEGRO) );
 
-        //Reyes
         getCasilla('e',1).setPieza( new Rey(Color.BLANCO) );
         getCasilla('e',8).setPieza( new Rey(Color.NEGRO) );
 
-        //Reinas
         getCasilla('d',1).setPieza( new Reina(Color.BLANCO) );
         getCasilla('d',8).setPieza( new Reina(Color.NEGRO) );
     }
