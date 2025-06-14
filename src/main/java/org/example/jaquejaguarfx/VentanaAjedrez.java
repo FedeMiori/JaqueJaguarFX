@@ -190,8 +190,6 @@ public class VentanaAjedrez extends Application {
         if (piezaAMover != null) {
             eliminarPieza(posicionDestino);
             piezaAMover.relocate(posicionDestino.getCoordenadasPixeles()[0], posicionDestino.getCoordenadasPixeles()[1]);
-        } else {
-            System.out.println("No se encontró ninguna pieza en la posición de origen.");
         }
     }
 

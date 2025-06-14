@@ -62,7 +62,6 @@ public class EstadoPartida {
             for (int j = 0; j < ALTO_TABLERO; j++) {
                 Posicion potencialJaque = new Posicion(i, j);
                 if (tablero.movimientoPosible(potencialJaque, posicionRey)) {
-                    System.out.println("Hay jaque");
                     return potencialJaque;
                 }
             }
@@ -86,7 +85,6 @@ public class EstadoPartida {
                     bloqueoEncontrado = puedeDefender(new Posicion(i, j), listaPosiblesBloqueos);
                     huidaDelRey = calcularHuidaRey(posicionRey);
                     jaqueJaguar &= !bloqueoEncontrado && !comerAlAtacante && !huidaDelRey;
-                    System.out.println("comer al atacante:"+comerAlAtacante+",\nbloqueoencontrado: "+bloqueoEncontrado+",\nhuida rey: "+huidaDelRey);
                 }
                 j++;
             }
