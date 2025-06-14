@@ -15,6 +15,10 @@ public class Jugador {
 
     public Color getColor() {return color;}
 
+    public String getColorPlural(){
+        return color == Color.BLANCO ? "BLANCAS" : "NEGRAS";
+    }
+
     public boolean moverPieza(VentanaAjedrez ventana, Tablero tablero){
         Posicion[] movimiento = ventana.registrarMovimiento();
         PosicionGrafica origen = (PosicionGrafica) movimiento[0], destino = (PosicionGrafica) movimiento[1];

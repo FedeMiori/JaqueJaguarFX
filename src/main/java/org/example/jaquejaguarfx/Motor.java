@@ -13,13 +13,13 @@ public class Motor implements Runnable{
     private Tablero tablero;
     private RegistrarPartida registro;
 
-    public Motor(VentanaAjedrez gestorventana){
+    public Motor(VentanaAjedrez gestorventana, String[] nombres){
         this.gestorventana = gestorventana;
         tablero = new Tablero();
         tablero.inicializar();
         jugadores = new Jugador[] {
-                new Jugador("Jugador Blancas", Color.BLANCO),
-                new Jugador("Jugador Negras", Color.NEGRO)
+                new Jugador(nombres[0], Color.BLANCO),
+                new Jugador(nombres[1], Color.NEGRO)
         };
         estadoPartida = new EstadoPartida(jugadores,tablero);
         registro = new RegistrarPartida();
@@ -34,7 +34,7 @@ public class Motor implements Runnable{
         Jugador jugadorConTurno;
         do{
             jugadorConTurno = estadoPartida.quienTieneTurno();
-            gestorventana.anunciarTurno(jugadorConTurno);
+            gestorventana.anunciarTurno(jugadorConTurno.getColorPlural());
             while(!jugadorConTurno.moverPieza(gestorventana, tablero));
             registro.aniadirEstadoTablero(tablero);
             estadoPartida.siguienteTurno();

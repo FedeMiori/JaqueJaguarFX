@@ -8,6 +8,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -22,6 +24,7 @@ public class VentanaAjedrez extends Application {
     private static final int ANCHO = 8;
     private static final int ALTO = 8;
     private static final String TITULO_VENTANA = "JAQUE JAGUAR";
+    private Motor motorJuego;
     private Stage primaryStage;
 
     private final Casilla[][] TableroGrafico = new Casilla[ANCHO][ALTO];
@@ -50,20 +53,105 @@ public class VentanaAjedrez extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+
+        // Pantalla de inicio
+        StackPane startRoot = new StackPane();
+        startRoot.setStyle("-fx-background-color: beige;");
+
+        // Estilo único para los TextField de nombres
+        String estiloTextFieldNegro =
+                "-fx-font-size: 18px;" +
+                        "-fx-padding: 10px;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-border-radius: 8;" +
+                        "-fx-border-color: #888;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-background-color: #222;" +      // Fondo negro
+                        "-fx-text-fill: white;" +            // Texto blanco
+                        "-fx-prompt-text-fill: #bbb;";       // Texto de sugerencia gris claro
+
+        // Cajas de texto para nombres de jugadores
+        javafx.scene.control.TextField nombreBlancas = new javafx.scene.control.TextField();
+        nombreBlancas.setPromptText("Nombre Jugador Blancas");
+        nombreBlancas.setMaxWidth(440);
+        nombreBlancas.setStyle(estiloTextFieldNegro);
+
+        javafx.scene.control.TextField nombreNegras = new javafx.scene.control.TextField();
+        nombreNegras.setPromptText("Nombre Jugador Negras");
+        nombreNegras.setMaxWidth(440);
+        nombreNegras.setStyle(estiloTextFieldNegro);
+
+        // Botón principal "Empezar"
+        javafx.scene.control.Button botonEmpezar = new javafx.scene.control.Button("Empezar");
+        botonEmpezar.setStyle(
+                "-fx-font-size: 24px;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 20px 30px;" +
+                        "-fx-background-color: rgba(30, 30, 30, 0.9);" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-effect: dropshadow(gaussian, black, 15, 0.4, 0, 2);" +
+                        "-fx-font-weight: bold;"
+        );
+        botonEmpezar.setMinWidth(440); // Duplicado de 220 a 440
+
+        // Botones pequeños "Web" y "Salir"
+        javafx.scene.control.Button botonWeb = new javafx.scene.control.Button("Web");
+        javafx.scene.control.Button botonSalir = new javafx.scene.control.Button("Salir");
+
+        String estiloBotonPeque =
+                "-fx-font-size: 20px;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-padding: 10px 0px;" +
+                        "-fx-background-color: rgba(30, 30, 30, 0.9);" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-effect: dropshadow(gaussian, black, 10, 0.3, 0, 1);" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-min-width: 215px;" + // Duplicado de 105 a 215 (2x215 + 10 = 440)
+                        "-fx-max-width: 215px;";
+
+        botonWeb.setStyle(estiloBotonPeque);
+        botonSalir.setStyle(estiloBotonPeque);
+
+        // Acciones de los botones pequeños
+        botonWeb.setOnAction(e -> getHostServices().showDocument("http:\\federicop.duckdns.org"));
+        botonSalir.setOnAction(e -> Platform.exit());
+
+        // HBox para los botones pequeños
+        HBox hboxBotonesPeque = new HBox(10, botonWeb, botonSalir); // 10px de espacio entre ellos
+        hboxBotonesPeque.setAlignment(javafx.geometry.Pos.CENTER);
+
+        VBox vbox = new VBox(20, nombreBlancas, nombreNegras, botonEmpezar, hboxBotonesPeque);
+        vbox.setAlignment(javafx.geometry.Pos.CENTER);
+
+        startRoot.getChildren().add(vbox);
+
+        // Guardar los nombres al pulsar "Empezar"
+        botonEmpezar.setOnAction(e -> {
+            iniciarJuego(
+                    new String[] {nombreBlancas.getText(), nombreNegras.getText()}
+            );
+        });
+
+        Scene startScene = new Scene(startRoot, DIMENSION_CASILLA * ANCHO, DIMENSION_CASILLA * ALTO);
+        primaryStage.setTitle(TITULO_VENTANA);
+        primaryStage.setScene(startScene);
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
+
+    private void iniciarJuego(String[] nombres) {
         GridPane grid = new GridPane();
-        Motor motorJuego = new Motor(this);
+        if (nombres[0].isEmpty()) nombres[0] = "Jugador Blancas";
+        if (nombres[1].isEmpty()) nombres[1] = "Jugador Negras";
+        motorJuego = new Motor(this, nombres);
 
         crearTablero(grid);
-
         inicializarTablero(motorJuego.getTablero());
 
         StackPane root = new StackPane(grid, pieceLayer);
         Scene scene = new Scene(root, DIMENSION_CASILLA * ANCHO, DIMENSION_CASILLA * ALTO);
-        primaryStage.setTitle(TITULO_VENTANA);
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
-        this.primaryStage = primaryStage;
 
         Thread hiloMotor = new Thread(motorJuego);
         hiloMotor.setDaemon(true); // para que no impida cerrar la aplicación
@@ -195,13 +283,13 @@ public class VentanaAjedrez extends Application {
         Platform.runLater(() -> {
             Label etiqueta = new Label(mensaje);
             etiqueta.setStyle(
-                    "-fx-font-size: 24px;" +
+                    "-fx-font-size: 14px;" + // Tamaño de fuente más pequeño
                             "-fx-text-fill: white;" +
-                            "-fx-padding: 20px 30px;" +
+                            "-fx-padding: 10px 16px;" + // Menos espacio alrededor del texto
                             "-fx-background-color: rgba(30, 30, 30, 0.9);" +
-                            "-fx-background-radius: 12;" +
-                            "-fx-effect: dropshadow(gaussian, black, 15, 0.4, 0, 2);" +
-                            "-fx-font-weight: bold;"
+                            "-fx-background-radius: 8;" + // Radio más pequeño
+                            "-fx-effect: dropshadow(gaussian, black, 8, 0.3, 0, 1);" + // Sombra más sutil
+                            "-fx-font-weight: normal;" // O puedes dejarlo en bold si prefieres
             );
 
             StackPane contenedorMensaje = new StackPane(etiqueta);
@@ -283,6 +371,8 @@ public class VentanaAjedrez extends Application {
 
                 if (newX >= 0 && newX < ANCHO && newY >= 0 && newY < ALTO)
                     ultimaPosicionDestino = new PosicionGrafica(newX,newY);
+                else
+                    efectoShake(ultimaPosicionOrigen);
                 recolocar(ultimaPosicionOrigen);
             });
         }
